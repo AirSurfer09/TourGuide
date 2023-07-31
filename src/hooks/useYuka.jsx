@@ -45,13 +45,12 @@ export const Manager = ({ children }) => {
         let nextRegion;
         if (present === 1) {
           nextRegion = entity.navMesh.getClosestRegion(point1);
-          console.log(nextRegion, 'NR');
         } else if (present === 2) {
           nextRegion = entity.navMesh.getClosestRegion(point2);
         }
         if (nextRegion !== entity.currentRegion) {
-          entity.maxForce = 1;
-          entity.maxSpeed = 2;
+          entity.maxForce = 3;
+          entity.maxSpeed = 3;
           entity.fromRegion = entity.currentRegion;
           entity.toRegion = nextRegion;
           const from = entity.position;
@@ -70,7 +69,7 @@ export const Manager = ({ children }) => {
           const heroWorldPosition = heroRef.current.getWorldPosition(
             new THREE.Vector3()
           );
-          entity.rotateTo(heroWorldPosition, _delta * 5);
+          entity.rotateTo(heroWorldPosition, _delta * 5, 0);
         }
       } else if (actionState[entity.name] === 'listening') {
         if (heroRef.current) {

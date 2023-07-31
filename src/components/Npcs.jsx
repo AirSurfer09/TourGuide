@@ -7,7 +7,6 @@ import { useConvaiClient } from '../hooks/useConvaiClient';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Guide } from './Character/Guide';
-import { phonemesGenerator } from '../helpers/phonemesGenerator';
 
 const MIN_DISTANCE = 8;
 
@@ -19,8 +18,6 @@ const MayaNpc = ({ name, position, heroRef }) => {
     keyPressed,
     handleTPress,
     handleTRelease,
-    npcText,
-    npcTextRef,
     textChunk,
   } = useConvaiClient({
     _apiKey: import.meta.env['VITE_CONVAI_APIKEY'],

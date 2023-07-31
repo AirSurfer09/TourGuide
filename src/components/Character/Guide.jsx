@@ -17,6 +17,7 @@ export function Guide(props) {
   useEffect(() => {
     if (props.talking) {
       const tem = phonemesGenerator(props.textChunk);
+
       for (let k = 0; k < tem.length; k++)
         for (let l = 0; l < tem[k].length; l++)
           visemes.current.push(`viseme_${tem[k][l]}`);
@@ -28,14 +29,14 @@ export function Guide(props) {
     if (props.talking === false) {
       for (let i1 = 0; i1 < visemes.current.length; i1++) {
         nodes.Wolf3D_Head.morphTargetInfluences[
-          nodes.Wolf3D_Head.morphTargetDictionary[visemes.current[i]]
+          nodes.Wolf3D_Head.morphTargetDictionary[visemes.current[i1]]
         ] = 0;
         nodes.Wolf3D_Teeth.morphTargetInfluences[
-          nodes.Wolf3D_Teeth.morphTargetDictionary[visemes.current[i]]
+          nodes.Wolf3D_Teeth.morphTargetDictionary[visemes.current[i1]]
         ] = 0;
       }
     }
-    if (time % 8 === 0 && props.talking) {
+    if (time % 10 === 0 && props.talking) {
       if (i > 0) {
         prevViseme = visemes.current[i - 1];
       }

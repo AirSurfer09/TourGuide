@@ -54,7 +54,9 @@ export const useConvaiClient = ({ _apiKey, _characterId }) => {
           let actionResponse = response.getActionResponse();
           let parsedActions = actionResponse.getAction().trim().split('\n');
           setActionText(parsedActions[0].split(', '));
-          if (parsedActions[0].split(', ') === 'walk') {
+          console.log(actionText);
+          // if (parsedActions[0].split(', ') === 'Walks') {
+          if (parsedActions[0].split(', ')) {
             // console.log(present);
             updatePresent(1);
             updateActionState.Maya('walking');
