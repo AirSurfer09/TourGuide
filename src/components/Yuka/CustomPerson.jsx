@@ -15,9 +15,9 @@ class CustomPerson extends Vehicle {
     super.update(delta);
     this.rotation.x = 0;
     this.rotation.z = 0;
-    this.maxSpeed = 2;
-    this.maxForce = 1;
-    this.maxTurnRate = Math.PI / 16;
+    this.maxSpeed = 3;
+    this.maxForce = 3;
+    this.maxTurnRate = Math.PI / 4;
     const currentRegion = this.navMesh.getRegionForPoint(this.position, 1);
 
     if (currentRegion !== null) {

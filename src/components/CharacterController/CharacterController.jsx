@@ -107,7 +107,7 @@ export const CharacterController = ({ reference }) => {
       const beckyWorldPosition = beckyRef.current.getWorldPosition(
         new THREE.Vector3()
       );
-      // console.log(beckyWorldPosition);
+
       let camAngle = Math.atan2(
         state.camera.position.x - beckyWorldPosition.x,
         state.camera.position.z - beckyWorldPosition.z
@@ -160,10 +160,7 @@ export const CharacterController = ({ reference }) => {
   });
 
   return (
-    <group
-      // rotation-z={-Math.PI}
-      position={[0, 2, 0]}
-    >
+    <group position={[0.010386942885816097, 1, 10.713516738956264]}>
       <OrbitControls
         enablePan={false}
         enableDamping={true}
