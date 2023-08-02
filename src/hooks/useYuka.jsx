@@ -9,11 +9,20 @@ const mgrContext = createContext();
 
 export const Manager = ({ children }) => {
   const [mgr] = useState(() => new EntityManager(), []);
-  const [actionState, navMesh, heroRef, present] = useZustStore((state) => [
+  const [
+    actionState,
+    navMesh,
+    heroRef,
+    updateActionState,
+    gState,
+    updateGState,
+  ] = useZustStore((state) => [
     state.actionState,
     state.navMesh,
     state.heroRef,
-    state.present,
+    state.actions.updateActionState,
+    state.gState,
+    state.updateGState,
   ]);
   useEffect(() => {
     if (!navMesh) {
@@ -38,30 +47,35 @@ export const Manager = ({ children }) => {
     0.07689154148101807,
     10.658949522017657
   );
+  const centriod1 = new Vector3(
+    -4.459091782569885,
+    0.20000000298023224,
+    1.968663215637207
+  );
   const findNextPath = (_delta) => {
     mgr.entities.forEach((entity) => {
       const followPathBehavior = entity.steering.behaviors[0];
+      const nextRegion = entity.navMesh.getClosestRegion(point1);
       if (actionState[entity.name] === 'walking') {
-        let nextRegion;
-        if (present === 1) {
-          nextRegion = entity.navMesh.getClosestRegion(point1);
-        } else if (present === 2) {
-          nextRegion = entity.navMesh.getClosestRegion(point2);
+        if (
+          JSON.stringify(entity.currentRegion.centroid) ===
+          JSON.stringify(centriod1)
+        ) {
+          // rest code goes here
+          updateGState('Reached');
+          updateActionState.Maya('idle');
         }
-        if (nextRegion !== entity.currentRegion) {
-          entity.maxForce = 3;
-          entity.maxSpeed = 3;
-          entity.fromRegion = entity.currentRegion;
-          entity.toRegion = nextRegion;
-          const from = entity.position;
-          const to = entity.toRegion.centroid;
-          followPathBehavior.path.clear();
-          const path = entity.navMesh.findPath(from, to);
-          followPathBehavior.active = true;
-          for (const point of path) {
-            followPathBehavior.path.add(point, 0.5);
-            // entity.rotateTo(point, _delta * 5);
-          }
+        entity.maxForce = 3;
+        entity.maxSpeed = 3;
+        entity.fromRegion = entity.currentRegion;
+        entity.toRegion = nextRegion;
+        const from = entity.position;
+        const to = entity.toRegion.centroid;
+        followPathBehavior.path.clear();
+        const path = entity.navMesh.findPath(from, to);
+        followPathBehavior.active = true;
+        for (const point of path) {
+          followPathBehavior.path.add(point, 0.5);
         }
       } else if (actionState[entity.name] === 'talking') {
         // stops the entity and increases the energy slower

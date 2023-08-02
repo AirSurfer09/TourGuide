@@ -2,8 +2,14 @@ import { ConvaiClient } from 'convai-web-sdk';
 import { useEffect, useRef, useState } from 'react';
 import { useZustStore } from './useStore';
 import 'regenerator-runtime/runtime';
-import SpeechRecognition from 'react-speech-recognition';
-export const useConvaiClient = ({ _apiKey, _characterId }) => {
+import { useMachine } from '@xstate/react';
+import { tour } from '../machine/tourState';
+export const useConvaiClient = ({
+  _apiKey,
+  _characterId,
+  _xState,
+  _xTransition,
+}) => {
   const [isProximity, setIsProximity] = useState(false);
   const [talking, setTalking] = useState(false);
   const [keyPressed, setKeyPressed] = useState(false);
@@ -16,6 +22,7 @@ export const useConvaiClient = ({ _apiKey, _characterId }) => {
   const finalizedUserText = useRef();
   const npcTextRef = useRef();
   const [textChunk, setTextChunk] = useState('');
+  const [activeTour, setActiveTour] = useState(false);
   const [present, updatePresent, updateActionState] = useZustStore((state) => [
     state.present,
     state.actions.updatePresent,
@@ -43,24 +50,28 @@ export const useConvaiClient = ({ _apiKey, _characterId }) => {
             setUserText(finalizedUserText.current);
           }
         }
+        if (response.hasActionResponse()) {
+          let actionResponse = response.getActionResponse();
+          let parsedActions = actionResponse.getAction().trim().split('\n');
+          setActionText(parsedActions[0].split(', '));
+          // if (
+          //   parsedActions[0].includes('Walk') ||
+          //   parsedActions[0].includes('Move') ||
+          //   parsedActions[0].includes('walk') ||
+          //   parsedActions[0].includes('move')
+          // ) {
+          //   // setting state to start
+          //   if (xState.value === 'AnyQuestions') {
+          //     // xTransition('START');
+          //     xTransition('Move');
+          //   }
+          // }
+        }
         if (response.hasAudioResponse()) {
           let audioResponse = response?.getAudioResponse();
           npcTextRef.current += ' ' + audioResponse.getTextData();
           setTextChunk(audioResponse.getTextData());
           setNpcText(npcTextRef.current);
-          // console.log(phonemes);
-        }
-        if (response.hasActionResponse()) {
-          let actionResponse = response.getActionResponse();
-          let parsedActions = actionResponse.getAction().trim().split('\n');
-          setActionText(parsedActions[0].split(', '));
-          console.log(actionText);
-          // if (parsedActions[0].split(', ') === 'Walks') {
-          if (parsedActions[0].split(', ')) {
-            // console.log(present);
-            updatePresent(1);
-            updateActionState.Maya('walking');
-          }
         }
       });
 
@@ -80,6 +91,10 @@ export const useConvaiClient = ({ _apiKey, _characterId }) => {
 
   const handleTPress = (e) => {
     if (e.keyCode === 84 && !keyPressed) {
+      console.log(_xState.value, 'Pressed');
+      if (_xState.value === 'AnyQuestions') {
+        setActiveTour(false);
+      }
       e.stopPropagation();
       e.preventDefault();
       setKeyPressed(true);
@@ -124,6 +139,7 @@ export const useConvaiClient = ({ _apiKey, _characterId }) => {
     isProximity,
     setIsProximity,
     talking,
+    setTalking,
     userText,
     npcText,
     keyPressed,
@@ -134,5 +150,7 @@ export const useConvaiClient = ({ _apiKey, _characterId }) => {
     currentCharId,
     npcTextRef,
     textChunk,
+    activeTour,
+    setActiveTour,
   };
 };

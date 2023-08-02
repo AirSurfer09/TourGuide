@@ -36,7 +36,7 @@ export function Guide(props) {
         ] = 0;
       }
     }
-    if (time % 10 === 0 && props.talking) {
+    if (time % 14 === 0 && props.talking) {
       if (i > 0) {
         prevViseme = visemes.current[i - 1];
       }

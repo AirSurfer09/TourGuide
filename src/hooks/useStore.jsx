@@ -3,27 +3,15 @@ import { create } from 'zustand';
 import * as THREE from 'three';
 import { createConvexRegionHelper } from '../helpers/createConvexRegionHelper';
 export const useZustStore = create((set, get) => {
-
   return {
     navMesh: null,
     heroRef: null,
-    zeroCoord: {
-      x: 0,
-      y: 0,
-      z: -2,
+    gState: 'Centroid1',
+    updateGState: (xState) => {
+      set({
+        gState: xState,
+      });
     },
-    firstCoord: {
-      x: -4.048896467221584,
-      y: 0.07689154148101807,
-      z: 1.3379009354136726,
-    },
-
-    secondCoord: {
-      x: 1.1506193623478698,
-      y: 0.07689154148101807,
-      z: 10.658949522017657,
-    },
-    present: -1,
     refs: {
       level: null,
     },

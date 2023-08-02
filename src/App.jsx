@@ -11,7 +11,7 @@ function App() {
   return (
     <>
       <Canvas
-        camera={{ position: [0, 2, 3], fov: 75 }}
+        camera={{ position: [0, 2, 8], fov: 75 }}
         onCreated={() => {
           actions.loadNavMesh('/loki_hall/loki_navigation.glb');
         }}
