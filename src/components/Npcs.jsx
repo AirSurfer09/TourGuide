@@ -1,20 +1,21 @@
-import { useAnimations, useFBX } from '@react-three/drei';
-import { useYuka } from '../hooks/useYuka';
-import { CustomPerson } from './Yuka/CustomPerson';
-import { useEffect, useRef } from 'react';
-import { useZustStore } from '../hooks/useStore';
-import { useConvaiClient } from '../hooks/useConvaiClient';
-import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import { Guide } from './Character/Guide';
-import { useMachine } from '@xstate/react';
-import { tour } from '../machine/tourState';
+import { useAnimations, useFBX } from "@react-three/drei";
+import { useYuka } from "../hooks/useYuka";
+import { CustomPerson } from "./Yuka/CustomPerson";
+import { useEffect, useRef } from "react";
+import { useZustStore } from "../hooks/useStore";
+import { useConvaiClient } from "../hooks/useConvaiClient";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import { Guide } from "./Character/Guide";
+import { useMachine } from "@xstate/react";
+import { tour } from "../machine/tourState";
 
 const MIN_DISTANCE = 8;
 
 const MayaNpc = ({ name, position, heroRef }) => {
   const [xState, xTransition] = useMachine(tour);
   const {
+    client,
     isProximity,
     setIsProximity,
     talking,
@@ -27,8 +28,8 @@ const MayaNpc = ({ name, position, heroRef }) => {
     activeTour,
     setActiveTour,
   } = useConvaiClient({
-    _apiKey: import.meta.env['VITE_CONVAI_APIKEY'],
-    _characterId: import.meta.env['VITE_GUIDE'],
+    _apiKey: import.meta.env["VITE_CONVAI_APIKEY"],
+    _characterId: import.meta.env["VITE_GUIDE"],
     _xState: xState,
     _xTransition: xTransition,
   });
@@ -37,22 +38,23 @@ const MayaNpc = ({ name, position, heroRef }) => {
     state.actions.updateActionState,
     state.gState,
   ]);
+  const updateClient = useZustStore((state) => state.updateClient);
   const [ref] = useYuka({
     type: CustomPerson,
     energy: 15,
     name: name,
     position: position,
   });
-  const { animations: standingAnimation } = useFBX('animations/Standing.fbx');
-  const { animations: walkingAnimation } = useFBX('animations/Walking.fbx');
+  const { animations: standingAnimation } = useFBX("animations/Standing.fbx");
+  const { animations: walkingAnimation } = useFBX("animations/Walking.fbx");
   const { animations: talkingAnimation } = useFBX(
-    'animations/TalkingFemale.fbx'
+    "animations/TalkingFemale.fbx"
   );
-  const { animations: listeningAnimation } = useFBX('animations/Listening.fbx');
-  walkingAnimation[0].name = 'walking';
-  standingAnimation[0].name = 'idle';
-  talkingAnimation[0].name = 'talking';
-  listeningAnimation[0].name = 'listening';
+  const { animations: listeningAnimation } = useFBX("animations/Listening.fbx");
+  walkingAnimation[0].name = "walking";
+  standingAnimation[0].name = "idle";
+  talkingAnimation[0].name = "talking";
+  listeningAnimation[0].name = "listening";
   const { actions } = useAnimations(
     [
       standingAnimation[0],
@@ -72,17 +74,18 @@ const MayaNpc = ({ name, position, heroRef }) => {
 
   useEffect(() => {
     if (isProximity) {
+      updateClient(client);
       if (talking) {
-        if (actionState?.Maya !== 'walking') updateActionState.Maya('talking');
+        if (actionState?.Maya !== "walking") updateActionState.Maya("talking");
       } else {
-        updateActionState.Maya('listening');
+        updateActionState.Maya("listening");
       }
 
-      window.addEventListener('keydown', handleTPress);
-      window.addEventListener('keyup', handleTRelease);
+      window.addEventListener("keydown", handleTPress);
+      window.addEventListener("keyup", handleTRelease);
       return () => {
-        window.removeEventListener('keydown', handleTPress);
-        window.removeEventListener('keyup', handleTRelease);
+        window.removeEventListener("keydown", handleTPress);
+        window.removeEventListener("keyup", handleTRelease);
       };
     }
   }, [isProximity, keyPressed, talking]);
@@ -98,7 +101,7 @@ const MayaNpc = ({ name, position, heroRef }) => {
       ref.current.lookAt(heroWorldPosition);
       if (distance > MIN_DISTANCE) {
         setIsProximity(false);
-        updateActionState.Maya('idle');
+        updateActionState.Maya("idle");
       }
     }
 
@@ -108,11 +111,11 @@ const MayaNpc = ({ name, position, heroRef }) => {
 
     // xState Code
     if (isProximity) {
-      if (xState.value === 'Waiting') xTransition('START');
+      if (xState.value === "Waiting") xTransition("START");
       convaiClient.current.onAudioPlay(() => {
         setTalking(true);
-        console.log('onAudioPlay');
-        if (xState.value === 'AnyQuestions') {
+        console.log("onAudioPlay");
+        if (xState.value === "AnyQuestions") {
           setActiveTour(true);
         }
       });
@@ -120,72 +123,72 @@ const MayaNpc = ({ name, position, heroRef }) => {
       convaiClient.current.onAudioStop(() => {
         setTalking(false);
         // setActiveTour(true);
-        console.log('onAudioStop');
-        if (xState.value.Welcome === 'WelcomeGreeting') {
-          xTransition('Done');
-        } else if (xState.value.Welcome === 'ExplainStatues') {
-          xTransition('Done2');
-        } else if (xState.value.Welcome === 'WallPainting') {
-          xTransition('Walks');
-        } else if (xState.value.WallPainting === 'Rotate') {
-          xTransition('Done');
-        } else if (xState.value.WallPainting === 'Exit') {
-          xTransition('Done');
+        console.log("onAudioStop");
+        if (xState.value.Welcome === "WelcomeGreeting") {
+          xTransition("Done");
+        } else if (xState.value.Welcome === "ExplainStatues") {
+          xTransition("Done2");
+        } else if (xState.value.Welcome === "WallPainting") {
+          xTransition("Walks");
+        } else if (xState.value.WallPainting === "Rotate") {
+          xTransition("Done");
+        } else if (xState.value.WallPainting === "Exit") {
+          xTransition("Done");
         }
       });
 
-      if (xState.value === 'AnyQuestions') {
+      if (xState.value === "AnyQuestions") {
         console.log(activeTour);
       } else if (
-        xState.value.Welcome === 'WalkingState' &&
-        gState === 'Reached'
+        xState.value.Welcome === "WalkingState" &&
+        gState === "Reached"
       ) {
-        xTransition('Reached');
-        updateActionState.Maya('listening');
+        xTransition("Reached");
+        updateActionState.Maya("listening");
       } else if (
-        xState.value.Welcome === 'WalkingState' &&
-        gState === 'Centroid1'
+        xState.value.Welcome === "WalkingState" &&
+        gState === "Centroid1"
       ) {
-        updateActionState.Maya('walking');
+        updateActionState.Maya("walking");
       }
     }
   });
 
   useEffect(() => {
     console.log(xState.value);
-    if (xState.value.Welcome === 'WelcomeGreeting') {
+    if (xState.value.Welcome === "WelcomeGreeting") {
       convaiClient?.current?.sendTextChunk(
-        'Introduce Yourself and greet the user'
+        "Introduce Yourself and greet the user"
       );
-    } else if (xState.value.Welcome === 'ExplainStatues') {
+    } else if (xState.value.Welcome === "ExplainStatues") {
       convaiClient?.current?.sendTextChunk(
-        'tell me about the three statues behind you'
+        "tell me about the three statues behind you"
       );
-    } else if (xState.value === 'AnyQuestions') {
+    } else if (xState.value === "AnyQuestions") {
       convaiClient?.current?.sendTextChunk(
-        'Ask the user if they have any questions'
+        "Ask the user if they have any questions"
       );
-    } else if (xState.value === 'Condition') {
+    } else if (xState.value === "Condition") {
       if (activeTour) {
-        xTransition('Yes');
+        xTransition("Yes");
       } else {
-        xTransition('No');
+        xTransition("No");
       }
-    } else if (xState.value.Welcome === 'WallPainting') {
+    } else if (xState.value.Welcome === "WallPainting") {
       convaiClient?.current?.sendTextChunk(
-        'Tell me that we are moving towards the glory wall'
+        "Tell me that we are moving towards the glory wall"
       );
-    } else if (xState.value.WallPainting === 'Rotate') {
+    } else if (xState.value.WallPainting === "Rotate") {
       convaiClient?.current?.sendTextChunk(
-        'Explain me about the wall paintings and its history'
+        "Explain me about the wall paintings and its history"
       );
-    } else if (xState.value.WallPainting === 'Exit') {
+    } else if (xState.value.WallPainting === "Exit") {
       convaiClient?.current?.sendTextChunk(
-        'Now tell me where these chairs in between'
+        "Now tell me where these chairs in between"
       );
-    } else if (xState.value === 'Conclude') {
+    } else if (xState.value === "Conclude") {
       convaiClient?.current?.sendTextChunk(
-        'Conclude the tour and tell me to ask questions'
+        "Conclude the tour and tell me to ask questions"
       );
     }
   }, [xState.value]);

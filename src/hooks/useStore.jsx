@@ -1,22 +1,28 @@
-import { NavMeshLoader } from 'yuka';
-import { create } from 'zustand';
-import * as THREE from 'three';
-import { createConvexRegionHelper } from '../helpers/createConvexRegionHelper';
+import { NavMeshLoader } from "yuka";
+import { create } from "zustand";
+import * as THREE from "three";
+import { createConvexRegionHelper } from "../helpers/createConvexRegionHelper";
 export const useZustStore = create((set, get) => {
   return {
     navMesh: null,
     heroRef: null,
-    gState: 'Centroid1',
+    gState: "Centroid1",
     updateGState: (xState) => {
       set({
         gState: xState,
+      });
+    },
+    clientState: null,
+    updateClient: (_client) => {
+      set({
+        clientState: _client,
       });
     },
     refs: {
       level: null,
     },
     actionState: {
-      Maya: 'idle',
+      Maya: "idle",
     },
     level: {
       geometry: new THREE.BufferGeometry(),

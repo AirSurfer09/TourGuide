@@ -160,33 +160,35 @@ export const CharacterController = ({ reference }) => {
   });
 
   return (
-    <group position={[0.010386942885816097, 1, 10.713516738956264]}>
-      <OrbitControls
-        enablePan={false}
-        enableDamping={true}
-        minPolarAngle={Math.PI / 3}
-        maxPolarAngle={Math.PI / 3}
-        minDistance={3}
-        maxDistance={4}
-        // enableZoom={false}
-        ref={controlsRef}
-      />
-      <RigidBody
-        ref={rigidBody}
-        colliders={false}
-        enabledRotations={[false, false, false]}
-        mass={1}
-        type="dynamic"
-        onCollisionEnter={() => {
-          isOnFloor.current = true;
-        }}
-      >
-        <CapsuleCollider args={[0.8, 0.4]} position={[0, 1.2, 0]} />
-        <group ref={beckyRef}>
-          {/* <Character /> */}
-          <Becky reference={reference} />
-        </group>
-      </RigidBody>
-    </group>
+    <>
+      <group position={[0.010386942885816097, 1, 10.713516738956264]}>
+        <OrbitControls
+          enablePan={false}
+          enableDamping={true}
+          minPolarAngle={Math.PI / 3}
+          maxPolarAngle={Math.PI / 3}
+          minDistance={3}
+          maxDistance={4}
+          // enableZoom={false}
+          ref={controlsRef}
+        />
+        <RigidBody
+          ref={rigidBody}
+          colliders={false}
+          enabledRotations={[false, false, false]}
+          mass={1}
+          type="dynamic"
+          onCollisionEnter={() => {
+            isOnFloor.current = true;
+          }}
+        >
+          <CapsuleCollider args={[0.8, 0.4]} position={[0, 1.2, 0]} />
+          <group ref={beckyRef}>
+            {/* <Character /> */}
+            <Becky reference={reference} />
+          </group>
+        </RigidBody>
+      </group>
+    </>
   );
 };
